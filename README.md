@@ -36,19 +36,3 @@ Image Size : (16, 16), Train Set size : 0.2, Accuracy : 1.0, F1 Score :0.9553233
 ## Observation
 
 ### Getting accuracy of 1.0 but F1 score is improving with resolution and test set size of 30 is giving slight better F1 score on all combination.
-
-
-
-MLOps Task and Assignment
-
-Training Sample:
-
-![Alt text](mlops/images/train.png?raw=true "Training Sample")
-
-Prediction Sample:
-
-![Alt text](mlops/images/predict.png?raw=true "Prediction Sample")
-
-Confusion Matrix:
-
-![Alt text](mlops/images/confision_matrix.png?raw=true "Confusion Matrix")
