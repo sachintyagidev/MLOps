@@ -33,6 +33,7 @@ Image Size : (16, 16), Train Set size : 0.3, Accuracy : 1.0, F1 Score :0.9628706
 
 Image Size : (16, 16), Train Set size : 0.2, Accuracy : 1.0, F1 Score :0.9553233661176804
 
+## Observation
 
 ### Getting accuracy of 1.0 but F1 score is improving with resolution and test set size of 30 is giving slight better F1 score on all combination.
 
