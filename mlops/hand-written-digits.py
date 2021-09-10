@@ -51,7 +51,7 @@ for gama in gamaSet:
     print('Accuracy : ' + str(acc) + ', F1 Score :' + str(f1) + '\n')
 
 
-print('\nBest Gamma is : ' + str(bestGamma) + ' with accuracy of ' + str(bestAcc) + ' and F1 score of ' + str(bestF1) + '\n')
+print('\nBest Gamma is : ' + str(bestGamma) + ' with accuracy of ' + str(bestAcc) + ' and F1 score of ' + str(bestF1) + ' on validation set \n')
 
 predicted = bestCLF.predict(X_test)
 print('Result on Test set')

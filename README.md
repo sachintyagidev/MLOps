@@ -26,7 +26,7 @@ Result on validation set
 Accuracy : 0.10037174721189591, F1 Score :0.018243243243243244
 
 
-## Best Gamma is : 0.001 with accuracy of 0.9925650557620818 and F1 score of 0.9926484660849987
+## Best Gamma is : 0.001 with accuracy of 0.9925650557620818 and F1 score of 0.9926484660849987 on validation set 
 
 Result on Test set
 Accuracy : 0.9481481481481482, F1 Score :0.9477475781671046
