@@ -22,7 +22,7 @@ gamaSet = [0.0001 ,0.001 , 0.01, 0.1, 1.0]
 
 X_train, X_test, y_train, y_test = train_test_split(data, digits.target, test_size=.15, shuffle=False)
 
-X_train, X_val, y_train, y_val = train_test_split(data, digits.target, test_size=0.15, shuffle=False)
+X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.176, shuffle=False)
 
 print('Train size: ' + str(len(X_train)) + ', ' + 'Test size: ' + str(len(X_test)) + ', ' + "Val size: " + str(len(X_val)) + '\n')
 
