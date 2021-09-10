@@ -16,44 +16,47 @@ for ax, image, label in zip(axes, digits.images, digits.target):
     ax.set_title('Training: %i' % label)
 
 n_samples = len(digits.images)
+data = digits.images.reshape((n_samples, -1))
 
-currSize = digits.images[0].shape
-print('Current Image size :' + str(currSize))
-
-print('Current data set size :' + str(digits.images.shape))
-
-resizeSet = [(4,4) ,(8,8) ,(16,16)]
-testSizeSet = [0.5 ,0.3 , 0.2]
 gamaSet = [0.0001 ,0.001 , 0.01, 0.1, 1.0]
 
-for size in resizeSet:
-    new_digits = np.array(list
-                            (map
-                            (lambda img: resize(
-                                            img.reshape(currSize),
-                                            size,
-                                            mode='constant'),
-                digits.images)))
+X_train, X_test, y_train, y_test = train_test_split(data, digits.target, test_size=.15, shuffle=False)
 
-    print('')
-    print('Changed data set size :' + str(new_digits.shape))
+X_train, X_val, y_train, y_val = train_test_split(data, digits.target, test_size=0.15, shuffle=False)
 
-    # flatten the images
-    data = new_digits.reshape((n_samples, -1))
+print('Train size: ' + str(len(X_train)) + ', ' + 'Test size: ' + str(len(X_test)) + ', ' + "Val size: " + str(len(X_val)) + '\n')
 
-    for gama in gamaSet:
-        # Create a classifier: a support vector classifier
-        clf = svm.SVC(gamma=gama)
+bestGamma = None
+bestAcc = 0
+bestF1 = 0
+bestCLF = None
 
-        for testSize in testSizeSet:
-            # Split data into 50% train and 50% test subsets
-            X_train, X_test, y_train, y_test = train_test_split(
-                data, digits.target, test_size=testSize, shuffle=False)
+for gama in gamaSet:
+    clf = svm.SVC(gamma=gama)
+    clf.fit(X_train, y_train)
 
-            # Learn the digits on the train subset
-            clf.fit(X_train, y_train)
+    predicted = clf.predict(X_val)
+    acc = clf.score(X_val, y_val)
+    f1 = f1_score(y_val, predicted, average='macro')
 
-            # Predict the value of the digit on the test subset
-            predicted = clf.predict(X_test)
+    if bestAcc < acc and bestF1 < f1:
+        bestAcc = acc
+        bestF1 = f1
+        bestGamma = gama
+        bestCLF = clf
 
-            print('Train Set size : ' + str(testSize) + ', Gamma :' + str(gama) +', Accuracy : ' + str(clf.score(X_test, y_test)) + ', F1 Score :' + str(f1_score(y_test, predicted, average='macro')))
+    print('Gamma :' + str(gama))
+
+    print('Result on validation set')
+    print('Accuracy : ' + str(acc) + ', F1 Score :' + str(f1) + '\n')
+
+
+print('\nBest Gamma is : ' + str(bestGamma) + ' with accuracy of ' + str(bestAcc) + ' and F1 score of ' + str(bestF1) + '\n')
+
+predicted = bestCLF.predict(X_test)
+print('Result on Test set')
+print('Accuracy : ' + str(bestCLF.score(X_test, y_test)) + ', F1 Score :' + str(f1_score(y_test, predicted, average='macro')) + '\n')
+
+predicted = bestCLF.predict(X_train)
+print('Result on Train set')
+print('Accuracy : ' + str(bestCLF.score(X_train, y_train)) + ', F1 Score :' + str(f1_score(y_train, predicted, average='macro')) + '\n')
