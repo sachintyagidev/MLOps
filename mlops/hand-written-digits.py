@@ -43,6 +43,7 @@ for size in resizeSet:
 
     for gama in gamaSet:
         # Create a classifier: a support vector classifier
+        print('\nGamma : ' + str(gama) + '\n')
         clf = svm.SVC(gamma=gama)
 
         for testSize in testSizeSet:
@@ -55,5 +56,4 @@ for size in resizeSet:
 
             # Predict the value of the digit on the test subset
             predicted = clf.predict(X_test)
-
-            print('Train Set size : ' + str(testSize) + ', Gamma :' + str(gama) +', Accuracy : ' + str(clf.score(X_test, y_test)) + ', F1 Score :' + str(f1_score(y_test, predicted, average='macro')))
+            print('Train Set size : ' + str(testSize) + ', Accuracy : ' + str(clf.score(X_test, y_test)) + ', F1 Score :' + str(f1_score(y_test, predicted, average='macro')))
