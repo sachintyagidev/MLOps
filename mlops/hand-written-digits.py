@@ -24,6 +24,7 @@ print('Current data set size :' + str(digits.images.shape))
 
 resizeSet = [(4,4) ,(8,8) ,(16,16)]
 testSizeSet = [0.5 ,0.3 , 0.2]
+gamaSet = [0.0001 ,0.001 , 0.01, 0.1, 1.0]
 
 for size in resizeSet:
     new_digits = np.array(list
@@ -40,38 +41,19 @@ for size in resizeSet:
     # flatten the images
     data = new_digits.reshape((n_samples, -1))
 
-    # Create a classifier: a support vector classifier
-    clf = svm.SVC(gamma=0.001)
+    for gama in gamaSet:
+        # Create a classifier: a support vector classifier
+        clf = svm.SVC(gamma=gama)
 
-    for testSize in testSizeSet:
-        # Split data into 50% train and 50% test subsets
-        X_train, X_test, y_train, y_test = train_test_split(
-            data, digits.target, test_size=testSize, shuffle=False)
+        for testSize in testSizeSet:
+            # Split data into 50% train and 50% test subsets
+            X_train, X_test, y_train, y_test = train_test_split(
+                data, digits.target, test_size=testSize, shuffle=False)
 
-        # Learn the digits on the train subset
-        clf.fit(X_train, y_train)
+            # Learn the digits on the train subset
+            clf.fit(X_train, y_train)
 
-        # Predict the value of the digit on the test subset
-        predicted = clf.predict(X_test)
+            # Predict the value of the digit on the test subset
+            predicted = clf.predict(X_test)
 
-        print('Image Size : ' + str(size) + ', Train Set size : ' + str(testSize) + ', Accuracy : ' + str(clf.score(X_test, predicted)) + ', F1 Score :' + str(f1_score(y_test, predicted, average='macro')))
-
-
-
-        '''
-        _, axes = plt.subplots(nrows=1, ncols=4, figsize=(10, 3))
-        for ax, image, prediction in zip(axes, X_test, predicted):
-            ax.set_axis_off()
-            image = image.reshape(size)
-            ax.imshow(image, cmap=plt.cm.gray_r, interpolation='nearest')
-            ax.set_title(f'Prediction: {prediction}')
-
-        print(f"Classification report for classifier {clf}:\n"
-            f"{metrics.classification_report(y_test, predicted)}\n")
-
-        disp = metrics.plot_confusion_matrix(clf, X_test, y_test)
-        disp.figure_.suptitle("Confusion Matrix")
-        print(f"Confusion matrix:\n{disp.confusion_matrix}")
-
-        plt.show()
-        '''
+            print('Train Set size : ' + str(testSize) + ', Gamma :' + str(gama) +', Accuracy : ' + str(clf.score(X_test, y_test)) + ', F1 Score :' + str(f1_score(y_test, predicted, average='macro')))
