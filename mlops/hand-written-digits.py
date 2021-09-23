@@ -42,7 +42,7 @@ def preprocess():
 def create_splits(data, target, test_size, val_size):
     X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=test_size, shuffle=False)
 
-    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=val_size, shuffle=False)
+    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=(val_size / (1 - test_size)), shuffle=False)
 
     print('Train size: ' + str(len(X_train)) + ', ' + 'Test size: ' + str(len(X_test)) + ', ' + "Val size: " + str(len(X_val)) + '\n')
 
