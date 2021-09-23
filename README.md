@@ -17,7 +17,8 @@ python mlops/hand-written-digits.py --testSize 0.15 --valSize 0.15 --modelLoc 'm
 
 --gamaSet       Gamma List to Test
 
-Train size: 1258, Test size: 270, Val size: 269
+
+### Train size: 1297, Test size: 270, Val size: 230
 
 ## Gamma :1e-07
 Result on validation set
@@ -27,7 +28,7 @@ Accuracy : 0.10869565217391304, F1 Score :0.0196078431372549
 ## Gamma :1e-06
 Result on validation set
 
-Accuracy : 0.10869565217391304, F1 Score :0.0196078431372549
+WAccuracy : 0.10869565217391304, F1 Score :0.0196078431372549
 
 ## Gamma :1e-05
 Result on validation set
@@ -56,10 +57,8 @@ Accuracy : 0.10869565217391304, F1 Score :0.0196078431372549
 
 # Best gama : 0.001
 
-Result on Test set
-
+## Result on Test set
 Accuracy : 0.9481481481481482, F1 Score :0.9472094045869722
 
-Result on Train set
-
+## Result on Train set
 Accuracy : 0.9992289899768697, F1 Score :0.9992337164750957
