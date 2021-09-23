@@ -8,9 +8,13 @@ python mlops/hand-written-digits.py --testSize 0.15 --valSize 0.15 --modelLoc 'm
 ### Parameters Details
 
 --testSize      Test Set Size
+
 --valSize'      Validation Size
+
 --modelLoc      Model Save Location
+
 --metricLoc     Metric Save Location
+
 --gamaSet       Gamma List to Test
 
 Train size: 1258, Test size: 270, Val size: 269
