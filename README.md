@@ -1,5 +1,5 @@
 # MLOps
-Parameter tunning:
+## Modularization:
 
 Command to execute from root of repo: 
 
