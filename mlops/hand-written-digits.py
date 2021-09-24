@@ -12,9 +12,9 @@ import argparse, sys
 parser=argparse.ArgumentParser()
 
 parser.add_argument('--testSize', help='Test Set Size', default=0.15, type=float)
-parser.add_argument('--valSize', help='Validation Size', default=0.176, type=float)
-parser.add_argument('--modelLoc', help='Model Save Location', default='model')
-parser.add_argument('--metricLoc', help='Metric Save Location', default='model')
+parser.add_argument('--valSize', help='Validation Size', default=0.15, type=float)
+parser.add_argument('--modelLoc', help='Model Save Location', default='models')
+parser.add_argument('--metricLoc', help='Metric Save Location', default='models')
 parser.add_argument('--gamaSet', help='Gamma List to Test', default=[10 ** exponent for exponent in range(-7, 0)], nargs='+', type=float)
 
 args=parser.parse_args()
