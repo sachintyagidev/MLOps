@@ -7,37 +7,22 @@ from skimage.transform import resize
 import numpy as np
 from sklearn.metrics import f1_score
 import pickle
-import argparse, sys
 
-parser=argparse.ArgumentParser()
-
-parser.add_argument('--testSize', help='Test Set Size', default=0.15, type=float)
-parser.add_argument('--valSize', help='Validation Size', default=0.15, type=float)
-parser.add_argument('--modelLoc', help='Model Save Location', default='models')
-parser.add_argument('--metricLoc', help='Metric Save Location', default='models')
-parser.add_argument('--gamaSet', help='Gamma List to Test', default=[10 ** exponent for exponent in range(-7, 0)], nargs='+', type=float)
-
-args=parser.parse_args()
-
-gamaSet = args.gamaSet
-test_size = float(args.testSize)
-val_size = float(args.valSize)
-filenameGama = args.modelLoc + '/model_{}.sav'
-metricFile = args.metricLoc + '/metric_gama'
-
-def preprocess():
+def preprocess(size = 0):
     digits = datasets.load_digits()
 
-    _, axes = plt.subplots(nrows=1, ncols=4, figsize=(10, 3))
-    for ax, image, label in zip(axes, digits.images, digits.target):
-        ax.set_axis_off()
-        ax.imshow(image, cmap=plt.cm.gray_r, interpolation='nearest')
-        ax.set_title('Training: %i' % label)
+    if size > 0:
+        images = digits.images[0:size]
+        target = digits.target[0:size]
+    else:
+        images = digits.images
+        target = digits.target
 
-    n_samples = len(digits.images)
-    data = digits.images.reshape((n_samples, -1))
+    n_samples = len(images)
+    data = images.reshape((n_samples, -1))
+    print(n_samples)
 
-    return data, digits.target
+    return data, target
 
 def create_splits(data, target, test_size, val_size):
     X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=test_size, shuffle=False)
@@ -53,8 +38,9 @@ def train(gama, X_train, y_train, X_val, y_val, filenameGama, metricFile):
     clf.fit(X_train, y_train)
 
     acc, f1 = test(clf, X_val, y_val)
-
-    validate(clf, gama, acc, f1)
+    
+    validate(clf, gama, acc, f1, filenameGama, metricFile)
+    return acc, f1
 
 def test(clf, X_val, y_val):
     predicted = clf.predict(X_val)
@@ -63,19 +49,13 @@ def test(clf, X_val, y_val):
 
     return acc, f1
 
-def validate(clf, gama, acc, f1):
+def validate(clf, gama, acc, f1, filenameGama, metricFile):
     pickle.dump(clf, open(filenameGama.format(gama), 'wb'))
     file1 = open(metricFile, "a")
     file1.write('{}, {}, {}\n'.format(gama, acc, f1))
     file1.close()
 
-    print('Gamma :' + str(gama))
-
-    print('Result on validation set')
-    print('Accuracy : ' + str(acc) + ', F1 Score :' + str(f1) + '\n')
-    
-
-def trainAll(gamaSet):
+def trainAll(gamaSet, X_train_s, y_train_s, X_val_s, y_val_s, filenameGama, metricFile):
     for gama in gamaSet:
         train(gama, X_train_s, y_train_s, X_val_s, y_val_s, filenameGama, metricFile)
 
@@ -98,7 +78,7 @@ def searchBestModel(metricFile):
     
     return bestGamma
 
-
+'''
 def report(filenameGama, bestParameter):
     # load the model from disk
     loaded_model = pickle.load(open(filenameGama.format(bestParameter), 'rb'))
@@ -110,16 +90,4 @@ def report(filenameGama, bestParameter):
     predicted = loaded_model.predict(X_train_s)
     print('Result on Train set')
     print('Accuracy : ' + str(loaded_model.score(X_train_s, y_train_s)) + ', F1 Score :' + str(f1_score(y_train_s, predicted, average='macro')) + '\n')
-
-
-data, target = preprocess()
-
-X_train_s, X_test_s, y_train_s, y_test_s, X_val_s, y_val_s = create_splits(data, target, test_size, val_size)
-
-trainAll(gamaSet)
-
-bestParameter = searchBestModel(metricFile)
-
-print('Best gama : ' + str(bestParameter) + '\n')
-
-report(filenameGama, bestParameter)
+'''
