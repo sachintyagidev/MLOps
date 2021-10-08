@@ -9,9 +9,6 @@ def test_labelset_check():
     testSplit = 0.20
     valSplit = 0.10
 
-    expectedTestSize = round(dateSetSize * testSplit)
-    expectedValSize = round(dateSetSize * valSplit)
-
     data, target = digits.preprocess(dateSetSize)
     
     X_train_s, X_test_s, y_train_s, y_test_s, X_val_s, y_val_s = digits.create_splits(data, target, testSplit, valSplit)
