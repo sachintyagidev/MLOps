@@ -196,3 +196,59 @@ def test_train_test_dimensionality():
     valDim = len(X_val_s[0])
 
     assert trainDim == testDim == valDim
+
+
+def test_DT_acc():
+    '''
+    generate data via preprocess function
+    '''
+    data, target = digits.preprocess()
+    
+    
+    X_train_s, X_test_s, y_train_s, y_test_s, X_val_s, y_val_s = digits.create_splits(data, target, 0.15, 0.15)
+
+    gamaSet = [10 ** exponent for exponent in range(-3, -2)]
+    filenameGama = 'model/model_{}.sav'
+    metricFile = 'model/metric_gama'
+
+    '''
+    check train metric for classification experiment
+    '''
+    acc, f1 = digits.train(gamaSet[0], X_train_s, y_train_s, X_val_s, y_val_s, filenameGama, metricFile)
+
+    accDT, f1DT = digits.train(None, X_train_s, y_train_s, X_val_s, y_val_s, filenameGama, metricFile, digits.Classifier.DecisionTree)
+
+    print(accDT, f1DT)
+    print(acc, f1)
+
+    assert accDT > 0.79
+    assert f1DT > 0.79
+
+    assert acc > 0.99
+    assert f1 > 0.99
+
+def test_model_multiple_train():
+    data, target = digits.preprocess()
+    
+    
+    X_train_s, X_test_s, y_train_s, y_test_s, X_val_s, y_val_s = digits.create_splits(data, target, 0.15, 0.15)
+
+    gamaSet = [10 ** exponent for exponent in range(-7, -1)]
+    filenameGama = 'model/model_svm_{}.sav'
+    metricFile = 'model/metric_gama'
+
+    '''
+    Run classification experiment
+    '''
+    digits.trainAll(gamaSet, X_train_s, y_train_s, X_val_s, y_val_s, filenameGama, metricFile)
+
+    print('Best Gama Value: ' + str(digits.searchBestModel(metricFile)))
+    
+    depthSet = [2, 4, 6, 8, 10, 12, 14, 16]
+    filenameGama = 'model/model_DT_{}.sav'
+    metricFile = 'model/metric_max_depth'
+
+    digits.trainAll(depthSet, X_train_s, y_train_s, X_val_s, y_val_s, filenameGama, metricFile, digits.Classifier.DecisionTree)
+    print('Best Depth Value: ' + str(digits.searchBestModel(metricFile)))
+
+    #assert True

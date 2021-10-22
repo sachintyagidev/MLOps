@@ -7,6 +7,12 @@ from skimage.transform import resize
 import numpy as np
 from sklearn.metrics import f1_score
 import pickle
+from sklearn import tree
+from enum import Enum
+
+class Classifier(Enum):
+    SVM = 1
+    DecisionTree = 2
 
 def preprocess(size = 0):
     digits = datasets.load_digits()
@@ -33,6 +39,7 @@ def create_splits(data, target, test_size, val_size):
 
     return X_train, X_test, y_train, y_test, X_val, y_val
 
+'''
 def train(gama, X_train, y_train, X_val, y_val, filenameGama, metricFile):
     clf = svm.SVC(gamma=gama)
     clf.fit(X_train, y_train)
@@ -40,6 +47,20 @@ def train(gama, X_train, y_train, X_val, y_val, filenameGama, metricFile):
     acc, f1 = test(clf, X_val, y_val)
     
     validate(clf, gama, acc, f1, filenameGama, metricFile)
+    return acc, f1
+'''
+
+def train(hyperParameter, X_train, y_train, X_val, y_val, filenameGama, metricFile, clfType = Classifier.SVM):
+    clf = None
+    if clfType == Classifier.SVM:
+        clf = svm.SVC(gamma=hyperParameter)
+    elif clfType == Classifier.DecisionTree:
+        clf = tree.DecisionTreeClassifier(max_depth=hyperParameter)
+
+    clf.fit(X_train, y_train)
+    acc, f1 = test(clf, X_val, y_val)
+    
+    validate(clf, hyperParameter, acc, f1, filenameGama, metricFile)
     return acc, f1
 
 def test(clf, X_val, y_val):
@@ -49,17 +70,22 @@ def test(clf, X_val, y_val):
 
     return acc, f1
 
-def validate(clf, gama, acc, f1, filenameGama, metricFile):
-    pickle.dump(clf, open(filenameGama.format(gama), 'wb'))
+def validate(clf, hyperParameter, acc, f1, filenameGama, metricFile, clfType = Classifier.SVM):
+    pickle.dump(clf, open(filenameGama.format(hyperParameter), 'wb'))
     file1 = open(metricFile, "a")
-    file1.write('{}, {}, {}\n'.format(gama, acc, f1))
+    file1.write('{}, {}, {}\n'.format(hyperParameter, acc, f1))
     file1.close()
 
-def trainAll(gamaSet, X_train_s, y_train_s, X_val_s, y_val_s, filenameGama, metricFile):
-    for gama in gamaSet:
-        train(gama, X_train_s, y_train_s, X_val_s, y_val_s, filenameGama, metricFile)
+def trainAll(hyperParameterSet, X_train_s, y_train_s, X_val_s, y_val_s, filenameGama, metricFile, clfType = Classifier.SVM):
+    for hyperParameter in hyperParameterSet:
+        acc, f1 = train(hyperParameter, X_train_s, y_train_s, X_val_s, y_val_s, filenameGama, metricFile, clfType)
+        
+        if clfType == Classifier.SVM:
+            print('SVM Gama : {0}, Accuracy : {1}, F1 : {2}'.format(hyperParameter, acc, f1))
+        elif clfType == Classifier.DecisionTree:
+            print('DT Depth : {0}, Accuracy : {1}, F1 : {2}'.format(hyperParameter, acc, f1))
 
-def searchBestModel(metricFile):
+def searchBestModel1(metricFile):
     bestGamma = None
     bestAcc = 0.0
     bestF1 = 0.0
@@ -77,6 +103,26 @@ def searchBestModel(metricFile):
             bestGamma = float(x[0])
     
     return bestGamma
+
+
+def searchBestModel(metricFile):
+    bestMyPara = None
+    bestAcc = 0.0
+    bestF1 = 0.0
+
+    file1 = open(metricFile, 'r')
+    Lines = file1.readlines()
+ 
+    for line in Lines:
+        x = line.split(",")
+        acc= float(x[1])
+        f1= float(x[2])
+        if bestAcc < acc and bestF1 < f1:
+            bestAcc = acc
+            bestF1 = f1
+            bestMyPara = float(x[0])
+    
+    return bestMyPara
 
 '''
 def report(filenameGama, bestParameter):
