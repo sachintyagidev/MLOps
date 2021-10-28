@@ -250,5 +250,3 @@ def test_model_multiple_train():
 
     digits.trainAll(depthSet, X_train_s, y_train_s, X_val_s, y_val_s, filenameGama, metricFile, digits.Classifier.DecisionTree)
     print('Best Depth Value: ' + str(digits.searchBestModel(metricFile)))
-
-    #assert True

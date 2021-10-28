@@ -77,13 +77,22 @@ def validate(clf, hyperParameter, acc, f1, filenameGama, metricFile, clfType = C
     file1.close()
 
 def trainAll(hyperParameterSet, X_train_s, y_train_s, X_val_s, y_val_s, filenameGama, metricFile, clfType = Classifier.SVM):
+    hypAcc = [];
     for hyperParameter in hyperParameterSet:
         acc, f1 = train(hyperParameter, X_train_s, y_train_s, X_val_s, y_val_s, filenameGama, metricFile, clfType)
+
+        hypAcc.append(acc)
         
         if clfType == Classifier.SVM:
             print('SVM Gama : {0}, Accuracy : {1}, F1 : {2}'.format(hyperParameter, acc, f1))
         elif clfType == Classifier.DecisionTree:
             print('DT Depth : {0}, Accuracy : {1}, F1 : {2}'.format(hyperParameter, acc, f1))
+
+    mean = sum(hypAcc) / len(hypAcc)
+    variance = sum([((x - mean) ** 2) for x in hypAcc]) / len(hypAcc)
+    res = variance ** 0.5
+
+    print('Mean : {0} and standard deviations {1} of accuracy for model.\n'.format(mean, res))
 
 def searchBestModel1(metricFile):
     bestGamma = None
