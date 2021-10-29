@@ -235,8 +235,8 @@ def test_model_multiple_train():
     metricFile = 'model/metric_gama'
 
     depthSet = [2, 4, 6, 8, 10, 12, 14, 16]
-    filenameGama = 'model/model_DT_{}.sav'
-    metricFile = 'model/metric_max_depth'
+    filenameDepth = 'model/model_DT_{}.sav'
+    metricFileDT = 'model/metric_max_depth'
 
     results = []
 
@@ -246,17 +246,15 @@ def test_model_multiple_train():
         X_train_s, X_test_s, y_train_s, y_test_s, X_val_s, y_val_s = digits.create_splits(data, target, splitSize, splitSize)
 
         digits.trainAll(gamaSet, X_train_s, y_train_s, X_val_s, y_val_s, filenameGama, metricFile)
-        bestPara, bestAcc, bestF1 = digits.searchBestModel(metricFile)
-        results.append({ "Split Size" : splitSize, "ModelType" : digits.Classifier.SVM, "Accuracy" : bestAcc, "F1": bestF1, "gama" : bestPara})
-
-        #print('Best Gama Value: ' + str(digits.searchBestModel(metricFile)))
+        bestParaSVM, bestAccSVM, bestF1SVM = digits.searchBestModel(metricFile)
+        #results.append({ "Split Size" : splitSize, "ModelType" : digits.Classifier.SVM, "Accuracy" : bestAccSVM, "F1": bestF1SVM, "gama" : bestParaSVM})
         
-        digits.trainAll(depthSet, X_train_s, y_train_s, X_val_s, y_val_s, filenameGama, metricFile, digits.Classifier.DecisionTree)
-        bestPara, bestAcc, bestF1 = digits.searchBestModel(metricFile)
-        results.append({ "Split Size" : splitSize, "ModelType" : digits.Classifier.DecisionTree, "Accuracy" : bestAcc, "F1": bestF1, "gama" : bestPara})
+        digits.trainAll(depthSet, X_train_s, y_train_s, X_val_s, y_val_s, filenameDepth, metricFileDT, digits.Classifier.DecisionTree)
+        bestParaDT, bestAccDT, bestF1DT = digits.searchBestModel(metricFileDT)
+        #results.append({ "Split Size" : splitSize, "ModelType" : digits.Classifier.DecisionTree, "Accuracy" : bestAcc, "F1": bestF1, "gama" : bestPara})
 
-        #print('Best Depth Value: ' + str(digits.searchBestModel(metricFile)))
-    
+        results.append({ "Split Size" : splitSize, "SVM Accuracy" : bestAccSVM, "SVM F1": bestF1SVM, "Gama" : bestParaSVM, "DT Accuracy" : bestAccDT, "DT F1": bestF1DT, "Depth" : bestParaDT})
+
     df = pd.DataFrame(results)
 
     print(df)
