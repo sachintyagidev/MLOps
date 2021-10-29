@@ -3,6 +3,7 @@ from ..mlops import digits
 import os
 import pickle
 import numpy as np
+import pandas as pd
 
 def test_labelset_check():
     dateSetSize = 100
@@ -229,24 +230,33 @@ def test_DT_acc():
 
 def test_model_multiple_train():
     data, target = digits.preprocess()
-    
-    
-    X_train_s, X_test_s, y_train_s, y_test_s, X_val_s, y_val_s = digits.create_splits(data, target, 0.15, 0.15)
-
     gamaSet = [10 ** exponent for exponent in range(-7, -1)]
     filenameGama = 'model/model_svm_{}.sav'
     metricFile = 'model/metric_gama'
 
-    '''
-    Run classification experiment
-    '''
-    digits.trainAll(gamaSet, X_train_s, y_train_s, X_val_s, y_val_s, filenameGama, metricFile)
-
-    print('Best Gama Value: ' + str(digits.searchBestModel(metricFile)))
-    
     depthSet = [2, 4, 6, 8, 10, 12, 14, 16]
     filenameGama = 'model/model_DT_{}.sav'
     metricFile = 'model/metric_max_depth'
 
-    digits.trainAll(depthSet, X_train_s, y_train_s, X_val_s, y_val_s, filenameGama, metricFile, digits.Classifier.DecisionTree)
-    print('Best Depth Value: ' + str(digits.searchBestModel(metricFile)))
+    results = []
+
+    for split in np.arange(0.05, 0.30, 0.05):
+        splitSize = round(split,2)
+
+        X_train_s, X_test_s, y_train_s, y_test_s, X_val_s, y_val_s = digits.create_splits(data, target, splitSize, splitSize)
+
+        digits.trainAll(gamaSet, X_train_s, y_train_s, X_val_s, y_val_s, filenameGama, metricFile)
+        bestPara, bestAcc, bestF1 = digits.searchBestModel(metricFile)
+        results.append({ "Split Size" : splitSize, "ModelType" : digits.Classifier.SVM, "Accuracy" : bestAcc, "F1": bestF1, "gama" : bestPara})
+
+        #print('Best Gama Value: ' + str(digits.searchBestModel(metricFile)))
+        
+        digits.trainAll(depthSet, X_train_s, y_train_s, X_val_s, y_val_s, filenameGama, metricFile, digits.Classifier.DecisionTree)
+        bestPara, bestAcc, bestF1 = digits.searchBestModel(metricFile)
+        results.append({ "Split Size" : splitSize, "ModelType" : digits.Classifier.DecisionTree, "Accuracy" : bestAcc, "F1": bestF1, "gama" : bestPara})
+
+        #print('Best Depth Value: ' + str(digits.searchBestModel(metricFile)))
+    
+    df = pd.DataFrame(results)
+
+    print(df)
