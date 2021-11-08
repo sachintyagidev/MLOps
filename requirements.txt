@@ -2,4 +2,6 @@ matplotlib
 scikit-learn
 scikit-image
 pytest==6.2.5
-flask=2.0.2
+flask==2.0.2
+flask-restplus==0.13.0
+Werkzeug
