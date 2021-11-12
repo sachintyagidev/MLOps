@@ -9,10 +9,23 @@ from sklearn.metrics import f1_score
 import pickle
 from sklearn import tree
 from enum import Enum
+import base64
 
 class Classifier(Enum):
     SVM = 1
     DecisionTree = 2
+
+
+digits = datasets.load_digits()
+images = digits.images
+target = digits.target
+
+n_samples = len(images)
+data = images.reshape((n_samples, -1))
+
+print(base64.b64encode(data[0]))
+
+print(target[0])
 
 def preprocess(size = 0):
     digits = datasets.load_digits()
