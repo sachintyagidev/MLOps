@@ -4,6 +4,7 @@ import os
 import pickle
 import numpy as np
 
+'''
 def test_labelset_check():
     dateSetSize = 100
     testSplit = 0.20
@@ -121,18 +122,12 @@ def test_model_writing():
     filenameGama = 'model/model_{}.sav'
     metricFile = 'model/metric_gama'
 
-    '''
-    Run classification experiment
-    '''
     digits.trainAll(gamaSet, X_train_s, y_train_s, X_val_s, y_val_s, filenameGama, metricFile)
 
     assert os.path.isfile(filenameGama.format(gamaSet[0]))
 
 
 def test_small_data_overfit_checking():
-    '''
-    generate data via preprocess function
-    '''
     data, target = digits.preprocess(50)
     
     
@@ -142,19 +137,13 @@ def test_small_data_overfit_checking():
     filenameGama = 'model/model_{}.sav'
     metricFile = 'model/metric_gama'
 
-    '''
-    check train metric for classification experiment
-    '''
     acc, f1 = digits.train(gamaSet[0], X_train_s, y_train_s, X_val_s, y_val_s, filenameGama, metricFile)
     
     assert acc > 0.99
     assert f1 > 0.99
 
 def test_model_not_corrupted():
-    '''
-    model saved in "test_model_writing" test case will be validated
-    '''
-
+    
     data, target = digits.preprocess()
     X_train_s, X_test_s, y_train_s, y_test_s, X_val_s, y_val_s = digits.create_splits(data, target, 0.15, 0.15)
 
@@ -168,10 +157,7 @@ def test_model_not_corrupted():
     assert len(predicted) == len(X_test_s)
 
 def test_model_deterministic():
-    '''
-    model saved in "test_model_writing" test case will be validated
-    '''
-
+    
     data, target = digits.preprocess()
     X_train_s, X_test_s, y_train_s, y_test_s, X_val_s, y_val_s = digits.create_splits(data, target, 0.15, 0.15)
 
@@ -199,9 +185,6 @@ def test_train_test_dimensionality():
 
 
 def test_DT_acc():
-    '''
-    generate data via preprocess function
-    '''
     data, target = digits.preprocess()
     
     
@@ -211,9 +194,6 @@ def test_DT_acc():
     filenameGama = 'model/model_{}.sav'
     metricFile = 'model/metric_gama'
 
-    '''
-    check train metric for classification experiment
-    '''
     acc, f1 = digits.train(gamaSet[0], X_train_s, y_train_s, X_val_s, y_val_s, filenameGama, metricFile)
 
     accDT, f1DT = digits.train(None, X_train_s, y_train_s, X_val_s, y_val_s, filenameGama, metricFile, digits.Classifier.DecisionTree)
@@ -237,9 +217,6 @@ def test_model_multiple_train():
     filenameGama = 'model/model_svm_{}.sav'
     metricFile = 'model/metric_gama'
 
-    '''
-    Run classification experiment
-    '''
     digits.trainAll(gamaSet, X_train_s, y_train_s, X_val_s, y_val_s, filenameGama, metricFile)
 
     print('Best Gama Value: ' + str(digits.searchBestModel(metricFile)))
@@ -250,3 +227,172 @@ def test_model_multiple_train():
 
     digits.trainAll(depthSet, X_train_s, y_train_s, X_val_s, y_val_s, filenameGama, metricFile, digits.Classifier.DecisionTree)
     print('Best Depth Value: ' + str(digits.searchBestModel(metricFile)))
+'''
+
+loaded_svm_model = pickle.load(open('/media/sachin/DATA1/IITJ/Sem IV/MLOps/Task/MLOps/model/model_svm_0.0001.sav', 'rb'))
+loaded_dt_model = pickle.load(open('/media/sachin/DATA1/IITJ/Sem IV/MLOps/Task/MLOps/model/model_DT_14.sav', 'rb'))
+data, target = digits.preprocess()
+min_acc_req = 0.87
+#X_train_s, X_test_s, y_train_s, y_test_s, X_val_s, y_val_s = digits.create_splits(data, target, 0.15, 0.15)
+
+def test_digit_correct_0():
+    result = np.where(target == 0)
+    image = data[result[0][0]]
+
+    image = np.array(image).reshape(1, -1)
+    
+    predictedSVM = loaded_svm_model.predict(image)
+    predictedDT = loaded_dt_model.predict(image)
+
+    accSVM, f1 = digits.test(loaded_svm_model, data[result[0]], target[result[0]])
+    accDT, f1 = digits.test(loaded_dt_model, data[result[0]], target[result[0]])
+
+    assert accSVM > min_acc_req
+    assert accDT > min_acc_req
+    assert predictedSVM==0
+    assert predictedDT==0
+    
+
+def test_digit_correct_1():
+    result = np.where(target == 1)
+    image = data[result[0][0]]
+
+    image = np.array(image).reshape(1, -1)
+    
+    predictedSVM = loaded_svm_model.predict(image)
+    predictedDT = loaded_dt_model.predict(image)
+    accSVM, f1 = digits.test(loaded_svm_model, data[result[0]], target[result[0]])
+    accDT, f1 = digits.test(loaded_dt_model, data[result[0]], target[result[0]])
+
+    assert accSVM > min_acc_req
+    assert accDT > min_acc_req
+    assert predictedSVM==1
+    assert predictedDT==1
+
+def test_digit_correct_2():
+    result = np.where(target == 2)
+    image = data[result[0][0]]
+
+    image = np.array(image).reshape(1, -1)
+    
+    predictedSVM = loaded_svm_model.predict(image)
+    predictedDT = loaded_dt_model.predict(image)
+    accSVM, f1 = digits.test(loaded_svm_model, data[result[0]], target[result[0]])
+    accDT, f1 = digits.test(loaded_dt_model, data[result[0]], target[result[0]])
+
+    assert accSVM > min_acc_req
+    assert accDT > min_acc_req
+    assert predictedSVM==2
+    assert predictedDT==2
+
+def test_digit_correct_3():
+    result = np.where(target == 3)
+    image = data[result[0][0]]
+
+    image = np.array(image).reshape(1, -1)
+    
+    predictedSVM = loaded_svm_model.predict(image)
+    predictedDT = loaded_dt_model.predict(image)
+    accSVM, f1 = digits.test(loaded_svm_model, data[result[0]], target[result[0]])
+    accDT, f1 = digits.test(loaded_dt_model, data[result[0]], target[result[0]])
+
+    assert accSVM > min_acc_req
+    assert accDT > min_acc_req
+    assert predictedSVM==3
+    assert predictedDT==3
+
+def test_digit_correct_4():
+    result = np.where(target == 4)
+    image = data[result[0][0]]
+
+    image = np.array(image).reshape(1, -1)
+    
+    predictedSVM = loaded_svm_model.predict(image)
+    predictedDT = loaded_dt_model.predict(image)
+    accSVM, f1 = digits.test(loaded_svm_model, data[result[0]], target[result[0]])
+    accDT, f1 = digits.test(loaded_dt_model, data[result[0]], target[result[0]])
+
+    assert accSVM > min_acc_req
+    assert accDT > min_acc_req
+    assert predictedSVM==4
+    assert predictedDT==4
+
+def test_digit_correct_5():
+    result = np.where(target == 5)
+    image = data[result[0][1]]
+
+    image = np.array(image).reshape(1, -1)
+    
+    predictedSVM = loaded_svm_model.predict(image)
+    predictedDT = loaded_dt_model.predict(image)
+    accSVM, f1 = digits.test(loaded_svm_model, data[result[0]], target[result[0]])
+    accDT, f1 = digits.test(loaded_dt_model, data[result[0]], target[result[0]])
+
+    assert accSVM > min_acc_req
+    assert accDT > min_acc_req
+    assert predictedSVM==5
+    assert predictedDT==5
+
+def test_digit_correct_6():
+    result = np.where(target == 6)
+    image = data[result[0][0]]
+
+    image = np.array(image).reshape(1, -1)
+    
+    predictedSVM = loaded_svm_model.predict(image)
+    predictedDT = loaded_dt_model.predict(image)
+    accSVM, f1 = digits.test(loaded_svm_model, data[result[0]], target[result[0]])
+    accDT, f1 = digits.test(loaded_dt_model, data[result[0]], target[result[0]])
+
+    assert accSVM > min_acc_req
+    assert accDT > min_acc_req
+    assert predictedSVM==6
+    assert predictedDT==6
+
+def test_digit_correct_7():
+    result = np.where(target == 7)
+    image = data[result[0][0]]
+
+    image = np.array(image).reshape(1, -1)
+    
+    predictedSVM = loaded_svm_model.predict(image)
+    predictedDT = loaded_dt_model.predict(image)
+    accSVM, f1 = digits.test(loaded_svm_model, data[result[0]], target[result[0]])
+    accDT, f1 = digits.test(loaded_dt_model, data[result[0]], target[result[0]])
+
+    assert accSVM > min_acc_req
+    assert accDT > min_acc_req
+    assert predictedSVM==7
+    assert predictedDT==7
+
+def test_digit_correct_8():
+    result = np.where(target == 8)
+    image = data[result[0][0]]
+
+    image = np.array(image).reshape(1, -1)
+    
+    predictedSVM = loaded_svm_model.predict(image)
+    predictedDT = loaded_dt_model.predict(image)
+    accSVM, f1 = digits.test(loaded_svm_model, data[result[0]], target[result[0]])
+    accDT, f1 = digits.test(loaded_dt_model, data[result[0]], target[result[0]])
+
+    assert accSVM > min_acc_req
+    assert accDT > min_acc_req
+    assert predictedSVM==8
+    assert predictedDT==8
+
+def test_digit_correct_9():
+    result = np.where(target == 9)
+    image = data[result[0][0]]
+
+    image = np.array(image).reshape(1, -1)
+    
+    predictedSVM = loaded_svm_model.predict(image)
+    predictedDT = loaded_dt_model.predict(image)
+    accSVM, f1 = digits.test(loaded_svm_model, data[result[0]], target[result[0]])
+    accDT, f1 = digits.test(loaded_dt_model, data[result[0]], target[result[0]])
+
+    assert accSVM > min_acc_req
+    assert accDT > min_acc_req
+    assert predictedSVM==9
+    assert predictedDT==9
