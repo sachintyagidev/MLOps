@@ -1,4 +1,4 @@
 # MLOps
-## Flask API
+## Digit each class accuracy
 
-Added flask API /hello and /check/<number>
+Each digit 1 sample accuracy and class test accuracy

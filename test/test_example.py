@@ -229,8 +229,8 @@ def test_model_multiple_train():
     print('Best Depth Value: ' + str(digits.searchBestModel(metricFile)))
 '''
 
-loaded_svm_model = pickle.load(open('/media/sachin/DATA1/IITJ/Sem IV/MLOps/Task/MLOps/model/model_svm_0.0001.sav', 'rb'))
-loaded_dt_model = pickle.load(open('/media/sachin/DATA1/IITJ/Sem IV/MLOps/Task/MLOps/model/model_DT_14.sav', 'rb'))
+loaded_svm_model = pickle.load(open('./model/model_svm_0.0001.sav', 'rb'))
+loaded_dt_model = pickle.load(open('./model/model_DT_14.sav', 'rb'))
 data, target = digits.preprocess()
 min_acc_req = 0.87
 #X_train_s, X_test_s, y_train_s, y_test_s, X_val_s, y_val_s = digits.create_splits(data, target, 0.15, 0.15)
