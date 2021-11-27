@@ -11,6 +11,7 @@ from sklearn import tree
 from enum import Enum
 import base64
 from statistics import mean
+from sklearn.neural_network import MLPClassifier
 
 class Classifier(Enum):
     SVM = 1
@@ -64,6 +65,13 @@ def trainExam(hyperParameter, X_train, y_train, X_val, y_val, X_test_s, y_test_s
         clf = svm.SVC(gamma=hyperParameter)
     elif clfType == Classifier.DecisionTree:
         clf = tree.DecisionTreeClassifier(max_depth=hyperParameter)
+
+    clfMLP = MLPClassifier(random_state=1, max_iter=300).fit(X_train, y_train)
+    mlpTest = clfMLP.score(X_test_s, y_test_s)
+    mlpTrain = clfMLP.score(X_train, y_train)
+    mlpVal = clfMLP.score(X_val, y_val)
+
+    print('MPL Result : Train : ' + str(mlpTrain) + ' Test : ' + str(mlpTest) + ' Validation : ' + str(mlpVal))
 
     filenameGama = 'modelExam/model_{}.sav'
 
