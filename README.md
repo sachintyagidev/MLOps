@@ -9,6 +9,8 @@ As we increase the datase size the macro f1 is incrasing but after 80% dataset i
 
 ## Different datasize model comparision
 
+Model with more data aree showing the improve in classification for each class. As more dataset model has less miss classified class. Also accuracy also improving for model wth more data.
+
 ### 20% and 10% dataset comparision
 
 F1 : 0.892798425389889 and 0.8245042940440873
