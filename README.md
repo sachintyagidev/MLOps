@@ -21,7 +21,7 @@ F1 : 0.892798425389889 and 0.8245042940440873
 F1 : 0.976060606060606 and 0.892798425389889
 
 ![alt text](mlops/images/3020-30.png?raw=true)
-![alt text](mlops/images/3030-20.png?raw=true)
+![alt text](mlops/images/3020-20.png?raw=true)
 
 ### 40% and 30% dataset comparision
 
