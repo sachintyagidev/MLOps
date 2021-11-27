@@ -13,7 +13,7 @@ python mlops/digits.py
 
 #### The best Gama is : 0.001 and 0.01 is overfitting that's why also perform bad on Test and validation
 
-Hyperparameter : 0.0001
+## Hyperparameter : 0.0001
 
 MPL Result : Train : 1.0 Test : 0.9555555555555556 Validation : 0.9666666666666667
 
@@ -29,7 +29,7 @@ Run 3, Train : 0.9785202863961814, Test : 0.9592592592592593, Validation : 0.977
 
 Mean :Train : 0.9774595597984619, Test : 0.9654320987654321, Validation : 0.9703703703703703
 
-Hyperparameter : 0.001
+## Hyperparameter : 0.001
 
 MPL Result : Train : 1.0 Test : 0.9592592592592593 Validation : 0.9888888888888889
 
@@ -45,7 +45,7 @@ Run 3, Train : 1.0, Test : 0.9888888888888889, Validation : 0.9888888888888889
 
 Mean :Train : 0.9992044550517104, Test : 0.9864197530864198, Validation : 0.9864197530864198
 
-Hyperparameter : 0.01
+## Hyperparameter : 0.01
 
 MPL Result : Train : 1.0 Test : 0.9592592592592593 Validation : 0.9629629629629629
 
