@@ -37,16 +37,28 @@ def predict():
     print(inputJson.image)
 '''
 
-loaded_model = pickle.load(open('../model/model_svm_0.0001.sav', 'rb'))
+loaded_model_svm = pickle.load(open('../model/model_svm_0.0001.sav', 'rb'))
+loaded_model_dt = pickle.load(open('../model/model_DT_14.sav', 'rb'))
 
-@api.route('/predict')
+@api.route('/svm_predict')
 class Predict(Resource):
     def post(self):
         inputJson = request.json
         image = inputJson['image']
 
         image = np.array(image).reshape(1, -1)
-        predicted = loaded_model.predict(image)
+        predicted = loaded_model_svm.predict(image)
+
+        return str(predicted[0])
+
+@api.route('/decision_tree_predict')
+class Predict(Resource):
+    def post(self):
+        inputJson = request.json
+        image = inputJson['image']
+
+        image = np.array(image).reshape(1, -1)
+        predicted = loaded_model_dt.predict(image)
 
         return str(predicted[0])
 
