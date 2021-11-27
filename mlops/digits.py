@@ -10,6 +10,7 @@ import pickle
 from sklearn import tree
 from enum import Enum
 import base64
+from statistics import mean
 
 class Classifier(Enum):
     SVM = 1
@@ -23,10 +24,6 @@ target = digits.target
 n_samples = len(images)
 data = images.reshape((n_samples, -1))
 
-print(base64.b64encode(data[0]))
-
-print(target[0])
-
 def preprocess(size = 0):
     digits = datasets.load_digits()
 
@@ -39,42 +36,18 @@ def preprocess(size = 0):
 
     n_samples = len(images)
     data = images.reshape((n_samples, -1))
-    print(n_samples)
+    #print(n_samples)
 
     return data, target
 
 def create_splits(data, target, test_size, val_size):
-    X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=test_size, shuffle=False)
+    X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=test_size)
 
-    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=(val_size / (1 - test_size)), shuffle=False)
+    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=(val_size / (1 - test_size)))
 
-    print('Train size: ' + str(len(X_train)) + ', ' + 'Test size: ' + str(len(X_test)) + ', ' + "Val size: " + str(len(X_val)) + '\n')
+    #print('Train size: ' + str(len(X_train)) + ', ' + 'Test size: ' + str(len(X_test)) + ', ' + "Val size: " + str(len(X_val)) + '\n')
 
     return X_train, X_test, y_train, y_test, X_val, y_val
-
-'''
-def train(gama, X_train, y_train, X_val, y_val, filenameGama, metricFile):
-    clf = svm.SVC(gamma=gama)
-    clf.fit(X_train, y_train)
-
-    acc, f1 = test(clf, X_val, y_val)
-    
-    validate(clf, gama, acc, f1, filenameGama, metricFile)
-    return acc, f1
-'''
-
-def train(hyperParameter, X_train, y_train, X_val, y_val, filenameGama, metricFile, clfType = Classifier.SVM):
-    clf = None
-    if clfType == Classifier.SVM:
-        clf = svm.SVC(gamma=hyperParameter)
-    elif clfType == Classifier.DecisionTree:
-        clf = tree.DecisionTreeClassifier(max_depth=hyperParameter)
-
-    clf.fit(X_train, y_train)
-    acc, f1 = test(clf, X_val, y_val)
-    
-    validate(clf, hyperParameter, acc, f1, filenameGama, metricFile)
-    return acc, f1
 
 def test(clf, X_val, y_val):
     predicted = clf.predict(X_val)
@@ -83,79 +56,53 @@ def test(clf, X_val, y_val):
 
     return acc, f1
 
-def validate(clf, hyperParameter, acc, f1, filenameGama, metricFile, clfType = Classifier.SVM):
+result = {}
+
+def trainExam(hyperParameter, X_train, y_train, X_val, y_val, X_test_s, y_test_s, clfType = Classifier.SVM):
+    clf = None
+    if clfType == Classifier.SVM:
+        clf = svm.SVC(gamma=hyperParameter)
+    elif clfType == Classifier.DecisionTree:
+        clf = tree.DecisionTreeClassifier(max_depth=hyperParameter)
+
+    filenameGama = 'modelExam/model_{}.sav'
+
+    clf.fit(X_train, y_train)
+    val_acc, val_f1 = test(clf, X_val, y_val)
+    train_acc, train_f1 = test(clf, X_train, y_train)
+    test_acc, test_f1 = test(clf, X_test_s, y_test_s)
+    
     pickle.dump(clf, open(filenameGama.format(hyperParameter), 'wb'))
-    file1 = open(metricFile, "a")
-    file1.write('{}, {}, {}\n'.format(hyperParameter, acc, f1))
-    file1.close()
+    return val_acc, val_f1, train_acc, train_f1, test_acc, test_f1
 
-def trainAll(hyperParameterSet, X_train_s, y_train_s, X_val_s, y_val_s, filenameGama, metricFile, clfType = Classifier.SVM):
-    hypAcc = [];
-    for hyperParameter in hyperParameterSet:
-        acc, f1 = train(hyperParameter, X_train_s, y_train_s, X_val_s, y_val_s, filenameGama, metricFile, clfType)
+def trainHyperparameter(gama):
+    valAcc = []
+    testAcc = []
+    trainAcc = []
 
-        hypAcc.append(acc)
-        
-        if clfType == Classifier.SVM:
-            print('SVM Gama : {0}, Accuracy : {1}, F1 : {2}'.format(hyperParameter, acc, f1))
-        elif clfType == Classifier.DecisionTree:
-            print('DT Depth : {0}, Accuracy : {1}, F1 : {2}'.format(hyperParameter, acc, f1))
+    print('Hyperparameter : ' + str(gama))
+    for i in range(0,3):
+        testSplit = 0.15
+        valSplit = 0.15
+        data, target = preprocess()
+            
+        X_train_s, X_test_s, y_train_s, y_test_s, X_val_s, y_val_s = create_splits(data, target, testSplit, valSplit)
 
-    mean = sum(hypAcc) / len(hypAcc)
-    variance = sum([((x - mean) ** 2) for x in hypAcc]) / len(hypAcc)
-    res = variance ** 0.5
+        val_acc, val_f1, train_acc, train_f1, test_acc, test_f1 = trainExam(gama, X_train_s, y_train_s, X_val_s, y_val_s, X_test_s, y_test_s)
+        print('Run ' + str(i + 1) + ", Train : " + str(train_acc) + ", Test : " + str(test_acc) + ", Validation : " + str(val_acc))
+        valAcc.append(val_acc)
+        testAcc.append(test_acc)
+        trainAcc.append(train_acc)
+        val_acc, val_f1, train_acc, train_f1, test_acc, test_f1 = 0,0,0,0,0,0
 
-    print('Mean : {0} and standard deviations {1} of accuracy for model.\n'.format(mean, res))
+    print('Mean :' + 'Train : ' + str(mean(trainAcc)) + ", Test : " + str(mean(testAcc)) + ", Validation : " + str(mean(valAcc))+ '\n')
 
-def searchBestModel1(metricFile):
-    bestGamma = None
-    bestAcc = 0.0
-    bestF1 = 0.0
+def mainExam():
 
-    file1 = open(metricFile, 'r')
-    Lines = file1.readlines()
- 
-    for line in Lines:
-        x = line.split(",")
-        acc= float(x[1])
-        f1= float(x[2])
-        if bestAcc < acc and bestF1 < f1:
-            bestAcc = acc
-            bestF1 = f1
-            bestGamma = float(x[0])
-    
-    return bestGamma
+    gamaSet = [10 ** exponent for exponent in range(-4, -1)]
+    result['Hyperparameter'] = gamaSet
+    for gama in gamaSet:
+        trainHyperparameter(gama)
 
-
-def searchBestModel(metricFile):
-    bestMyPara = None
-    bestAcc = 0.0
-    bestF1 = 0.0
-
-    file1 = open(metricFile, 'r')
-    Lines = file1.readlines()
- 
-    for line in Lines:
-        x = line.split(",")
-        acc= float(x[1])
-        f1= float(x[2])
-        if bestAcc < acc and bestF1 < f1:
-            bestAcc = acc
-            bestF1 = f1
-            bestMyPara = float(x[0])
-    
-    return bestMyPara
-
-'''
-def report(filenameGama, bestParameter):
-    # load the model from disk
-    loaded_model = pickle.load(open(filenameGama.format(bestParameter), 'rb'))
-
-    predicted = loaded_model.predict(X_test_s)
-    print('Result on Test set')
-    print('Accuracy : ' + str(loaded_model.score(X_test_s, y_test_s)) + ', F1 Score :' + str(f1_score(y_test_s, predicted, average='macro')) + '\n')
-
-    predicted = loaded_model.predict(X_train_s)
-    print('Result on Train set')
-    print('Accuracy : ' + str(loaded_model.score(X_train_s, y_train_s)) + ', F1 Score :' + str(f1_score(y_train_s, predicted, average='macro')) + '\n')
-'''
+    print('Done')
+mainExam()

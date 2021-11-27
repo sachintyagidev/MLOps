@@ -1,8 +1,12 @@
 # MLOps
-## Docker predict SVM and DT
+## EXAM
+
+### Model Hyperparameter command
+
+python mlops/digits.py
 
 ### Image build command 
-sudo docker build -t ass10 . -f docker/Dockerfile
+sudo docker build -t exam . -f docker/Dockerfile
 
 ### Container RUN Command
-sudo docker run -d --network=host ass10:latest
+sudo docker run -d --network=host --name exam -v '/media/sachin/DATA1/IITJ/Sem IV/MLOps/Task/MLOps/modelExam':/code/modelExam exam:latest
